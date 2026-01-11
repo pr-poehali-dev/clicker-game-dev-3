@@ -1,0 +1,24 @@
+{
+  "tests": [
+    {
+      "name": "Get login URL",
+      "method": "GET",
+      "path": "/?action=login",
+      "expectedStatus": 200,
+      "expectedBody": {
+        "authUrl": "string"
+      },
+      "bodyMatcher": "partial"
+    },
+    {
+      "name": "Verify endpoint without token",
+      "method": "GET",
+      "path": "/?action=verify",
+      "expectedStatus": 401,
+      "expectedBody": {
+        "error": "string"
+      },
+      "bodyMatcher": "partial"
+    }
+  ]
+}
