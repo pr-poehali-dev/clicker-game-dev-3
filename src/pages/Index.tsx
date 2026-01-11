@@ -41,6 +41,15 @@ const SKINS: Skin[] = [
   { id: 'rocket', name: 'Ракета', icon: 'Rocket', cost: 10000 },
 ];
 
+let audioContext: AudioContext | null = null;
+
+const getAudioContext = () => {
+  if (!audioContext) {
+    audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
+  }
+  return audioContext;
+};
+
 const Index = () => {
   const { isAuthenticated, isLoading, user, login, logout } = useAuth();
   
@@ -199,41 +208,41 @@ const Index = () => {
   const playSound = (type: 'click' | 'buy' | 'achievement' | 'levelup') => {
     if (!soundEnabled) return;
     
-    const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
-    const oscillator = audioContext.createOscillator();
-    const gainNode = audioContext.createGain();
+    const context = getAudioContext();
+    const oscillator = context.createOscillator();
+    const gainNode = context.createGain();
     
     oscillator.connect(gainNode);
-    gainNode.connect(audioContext.destination);
+    gainNode.connect(context.destination);
     
     switch (type) {
       case 'click':
         oscillator.frequency.value = 800;
-        gainNode.gain.setValueAtTime(0.1, audioContext.currentTime);
-        gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.1);
-        oscillator.start(audioContext.currentTime);
-        oscillator.stop(audioContext.currentTime + 0.1);
+        gainNode.gain.setValueAtTime(0.1, context.currentTime);
+        gainNode.gain.exponentialRampToValueAtTime(0.01, context.currentTime + 0.1);
+        oscillator.start(context.currentTime);
+        oscillator.stop(context.currentTime + 0.1);
         break;
       case 'buy':
         oscillator.frequency.value = 600;
-        gainNode.gain.setValueAtTime(0.15, audioContext.currentTime);
-        gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.2);
-        oscillator.start(audioContext.currentTime);
-        oscillator.stop(audioContext.currentTime + 0.2);
+        gainNode.gain.setValueAtTime(0.15, context.currentTime);
+        gainNode.gain.exponentialRampToValueAtTime(0.01, context.currentTime + 0.2);
+        oscillator.start(context.currentTime);
+        oscillator.stop(context.currentTime + 0.2);
         break;
       case 'achievement':
         oscillator.frequency.value = 1000;
-        gainNode.gain.setValueAtTime(0.2, audioContext.currentTime);
-        gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.3);
-        oscillator.start(audioContext.currentTime);
-        oscillator.stop(audioContext.currentTime + 0.3);
+        gainNode.gain.setValueAtTime(0.2, context.currentTime);
+        gainNode.gain.exponentialRampToValueAtTime(0.01, context.currentTime + 0.3);
+        oscillator.start(context.currentTime);
+        oscillator.stop(context.currentTime + 0.3);
         break;
       case 'levelup':
         oscillator.frequency.value = 1200;
-        gainNode.gain.setValueAtTime(0.2, audioContext.currentTime);
-        gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.5);
-        oscillator.start(audioContext.currentTime);
-        oscillator.stop(audioContext.currentTime + 0.5);
+        gainNode.gain.setValueAtTime(0.2, context.currentTime);
+        gainNode.gain.exponentialRampToValueAtTime(0.01, context.currentTime + 0.5);
+        oscillator.start(context.currentTime);
+        oscillator.stop(context.currentTime + 0.5);
         break;
     }
   };
