@@ -18,6 +18,49 @@ interface ClickerCardProps {
   getLevelMultiplier: (lvl: number) => number;
 }
 
+const getSkinStyles = (skin: string) => {
+  const styles = {
+    Sparkles: {
+      gradient: 'from-purple-500 via-purple-600 to-purple-700',
+      shadow: 'shadow-purple-500/50',
+      hover: 'hover:shadow-purple-500/70',
+      glow: 'drop-shadow-[0_0_15px_rgba(168,85,247,0.5)]',
+    },
+    Flame: {
+      gradient: 'from-orange-500 via-red-500 to-red-600',
+      shadow: 'shadow-orange-500/50',
+      hover: 'hover:shadow-orange-500/70',
+      glow: 'drop-shadow-[0_0_15px_rgba(249,115,22,0.5)]',
+    },
+    Zap: {
+      gradient: 'from-yellow-400 via-yellow-500 to-amber-500',
+      shadow: 'shadow-yellow-400/50',
+      hover: 'hover:shadow-yellow-400/70',
+      glow: 'drop-shadow-[0_0_15px_rgba(250,204,21,0.5)]',
+    },
+    Star: {
+      gradient: 'from-blue-400 via-blue-500 to-blue-600',
+      shadow: 'shadow-blue-400/50',
+      hover: 'hover:shadow-blue-400/70',
+      glow: 'drop-shadow-[0_0_15px_rgba(96,165,250,0.5)]',
+    },
+    Gem: {
+      gradient: 'from-cyan-400 via-teal-500 to-emerald-500',
+      shadow: 'shadow-cyan-400/50',
+      hover: 'hover:shadow-cyan-400/70',
+      glow: 'drop-shadow-[0_0_15px_rgba(34,211,238,0.5)]',
+    },
+    Rocket: {
+      gradient: 'from-pink-500 via-rose-500 to-red-500',
+      shadow: 'shadow-pink-500/50',
+      hover: 'hover:shadow-pink-500/70',
+      glow: 'drop-shadow-[0_0_15px_rgba(236,72,153,0.5)]',
+    },
+  };
+  
+  return styles[skin as keyof typeof styles] || styles.Sparkles;
+};
+
 export const ClickerCard = ({
   points,
   totalClicks,
@@ -31,6 +74,8 @@ export const ClickerCard = ({
   handleClick,
   getLevelMultiplier,
 }: ClickerCardProps) => {
+  const skinStyle = getSkinStyles(selectedSkin);
+  
   return (
     <Card className="shadow-lg border-2 border-purple-100">
       <CardHeader>
@@ -57,15 +102,17 @@ export const ClickerCard = ({
           <Progress value={levelProgress} className="h-3" />
         </div>
 
-        <div className="flex justify-center items-center py-8">
+        <div className="flex justify-center items-center py-8 relative">
           <Button
             size="lg"
             onClick={handleClick}
-            className={`w-64 h-64 rounded-full text-6xl font-bold shadow-2xl transition-all duration-300 ${
-              isClicking ? 'animate-click-bounce' : 'hover:scale-105 animate-pulse-gentle'
+            className={`w-64 h-64 rounded-full text-6xl font-bold shadow-2xl transition-all duration-300 bg-gradient-to-br ${skinStyle.gradient} ${skinStyle.shadow} ${skinStyle.hover} border-0 ${
+              isClicking ? 'animate-click-bounce scale-90' : 'hover:scale-105 animate-pulse-gentle'
             }`}
           >
-            <Icon name={selectedSkin} size={120} />
+            <div className={`${skinStyle.glow} transition-all duration-300`}>
+              <Icon name={selectedSkin} size={120} />
+            </div>
           </Button>
         </div>
 
