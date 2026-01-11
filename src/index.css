@@ -104,3 +104,18 @@
     font-family: "Montserrat", sans-serif;
   }
 }
+
+@keyframes particle-float {
+  0% {
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 1;
+  }
+  100% {
+    transform: translate(
+        calc(-50% + var(--particle-x)),
+        calc(-50% + var(--particle-y))
+      )
+      scale(0);
+    opacity: 0;
+  }
+}

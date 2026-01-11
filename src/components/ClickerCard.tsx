@@ -1,3 +1,4 @@
+import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -18,6 +19,14 @@ interface ClickerCardProps {
   getLevelMultiplier: (lvl: number) => number;
 }
 
+interface Particle {
+  id: number;
+  x: number;
+  y: number;
+  color: string;
+  icon: string;
+}
+
 const getSkinStyles = (skin: string) => {
   const styles = {
     Sparkles: {
@@ -25,36 +34,48 @@ const getSkinStyles = (skin: string) => {
       shadow: 'shadow-purple-500/50',
       hover: 'hover:shadow-purple-500/70',
       glow: 'drop-shadow-[0_0_15px_rgba(168,85,247,0.5)]',
+      particleColor: 'text-purple-400',
+      particleIcon: 'Sparkles',
     },
     Flame: {
       gradient: 'from-orange-500 via-red-500 to-red-600',
       shadow: 'shadow-orange-500/50',
       hover: 'hover:shadow-orange-500/70',
       glow: 'drop-shadow-[0_0_15px_rgba(249,115,22,0.5)]',
+      particleColor: 'text-orange-400',
+      particleIcon: 'Flame',
     },
     Zap: {
       gradient: 'from-yellow-400 via-yellow-500 to-amber-500',
       shadow: 'shadow-yellow-400/50',
       hover: 'hover:shadow-yellow-400/70',
       glow: 'drop-shadow-[0_0_15px_rgba(250,204,21,0.5)]',
+      particleColor: 'text-yellow-300',
+      particleIcon: 'Zap',
     },
     Star: {
       gradient: 'from-blue-400 via-blue-500 to-blue-600',
       shadow: 'shadow-blue-400/50',
       hover: 'hover:shadow-blue-400/70',
       glow: 'drop-shadow-[0_0_15px_rgba(96,165,250,0.5)]',
+      particleColor: 'text-blue-300',
+      particleIcon: 'Star',
     },
     Gem: {
       gradient: 'from-cyan-400 via-teal-500 to-emerald-500',
       shadow: 'shadow-cyan-400/50',
       hover: 'hover:shadow-cyan-400/70',
       glow: 'drop-shadow-[0_0_15px_rgba(34,211,238,0.5)]',
+      particleColor: 'text-cyan-300',
+      particleIcon: 'Gem',
     },
     Rocket: {
       gradient: 'from-pink-500 via-rose-500 to-red-500',
       shadow: 'shadow-pink-500/50',
       hover: 'hover:shadow-pink-500/70',
       glow: 'drop-shadow-[0_0_15px_rgba(236,72,153,0.5)]',
+      particleColor: 'text-pink-300',
+      particleIcon: 'Rocket',
     },
   };
   
@@ -75,6 +96,37 @@ export const ClickerCard = ({
   getLevelMultiplier,
 }: ClickerCardProps) => {
   const skinStyle = getSkinStyles(selectedSkin);
+  const [particles, setParticles] = useState<Particle[]>([]);
+  
+  useEffect(() => {
+    if (particles.length > 0) {
+      const timer = setTimeout(() => {
+        setParticles([]);
+      }, 1000);
+      return () => clearTimeout(timer);
+    }
+  }, [particles]);
+  
+  const createParticles = () => {
+    const newParticles: Particle[] = [];
+    for (let i = 0; i < 8; i++) {
+      const angle = (Math.PI * 2 * i) / 8;
+      const distance = 80 + Math.random() * 40;
+      newParticles.push({
+        id: Date.now() + i,
+        x: Math.cos(angle) * distance,
+        y: Math.sin(angle) * distance,
+        color: skinStyle.particleColor,
+        icon: skinStyle.particleIcon,
+      });
+    }
+    setParticles(newParticles);
+  };
+  
+  const onClickHandler = () => {
+    handleClick();
+    createParticles();
+  };
   
   return (
     <Card className="shadow-lg border-2 border-purple-100">
@@ -105,7 +157,7 @@ export const ClickerCard = ({
         <div className="flex justify-center items-center py-8 relative">
           <Button
             size="lg"
-            onClick={handleClick}
+            onClick={onClickHandler}
             className={`w-64 h-64 rounded-full text-6xl font-bold shadow-2xl transition-all duration-300 bg-gradient-to-br ${skinStyle.gradient} ${skinStyle.shadow} ${skinStyle.hover} border-0 ${
               isClicking ? 'animate-click-bounce scale-90' : 'hover:scale-105 animate-pulse-gentle'
             }`}
@@ -114,6 +166,24 @@ export const ClickerCard = ({
               <Icon name={selectedSkin} size={120} />
             </div>
           </Button>
+          
+          {particles.map(particle => (
+            <div
+              key={particle.id}
+              className="absolute pointer-events-none animate-[particle-float_1s_ease-out_forwards]"
+              style={{
+                left: '50%',
+                top: '50%',
+                transform: `translate(-50%, -50%)`,
+                '--particle-x': `${particle.x}px`,
+                '--particle-y': `${particle.y}px`,
+              } as React.CSSProperties}
+            >
+              <div className={`${particle.color} drop-shadow-lg`}>
+                <Icon name={particle.icon} size={32} />
+              </div>
+            </div>
+          ))}
         </div>
 
         <div className="grid grid-cols-2 gap-4 pt-4 border-t">
